@@ -1,19 +1,23 @@
 if (Meteor.isClient) {
-  // counter starts at 0
-  Session.setDefault("counter", 0);
+  Template.map.rendered = function() {
+    var width = 960,
+    height = 600;
 
-  Template.hello.helpers({
-    counter: function () {
-      return Session.get("counter");
-    }
-  });
+    var path = d3.geo.path()
+    .projection(null);
 
-  Template.hello.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set("counter", Session.get("counter") + 1);
-    }
-  });
+    var svg = d3.select("#map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    d3.json("counties.json", function(error, us) {
+      if (error) return console.error(error);
+
+      svg.append("path")
+      .datum(topojson.mesh(us))
+      .attr("d", path);
+    });
+  };
 }
 
 if (Meteor.isServer) {
